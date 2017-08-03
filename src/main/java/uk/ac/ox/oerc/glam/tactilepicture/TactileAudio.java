@@ -48,7 +48,7 @@ public class TactileAudio {
      * @param event
      * @return
      */
-    public void setAudio(PointF event, MediaPlayer mediaPlayer, int duration) {
+    public void setAudio(PointF event) {
         /**
          * If x is less 0.10 and y is less that 0.10, state == 3, reset time
          */
