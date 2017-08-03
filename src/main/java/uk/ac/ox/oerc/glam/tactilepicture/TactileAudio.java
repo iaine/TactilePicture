@@ -43,6 +43,13 @@ public class TactileAudio {
     }
 
     /**
+     * Method to reset the duration to 0
+     */
+    private void resetDuration() {
+        this.duration = 0;
+    }
+
+    /**
      * Get the audio from the DAO and handle the player
      *
      * @param event
@@ -92,10 +99,6 @@ public class TactileAudio {
     private void stopCommand(MediaPlayer mediaPlayer) {
         new TactileMediaPlayer(mediaPlayer).execute(aState, "");
         this.resetDuration();
-    }
-
-    private void resetDuration() {
-        duration = 0;
     }
 
     private void pauseCommand(MediaPlayer mediaPlayer) {
