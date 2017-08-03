@@ -16,7 +16,7 @@ public class TactileDAOTests {
         TactileDAO td = new TactileDAO();
         PointF point = new PointF(750, 1092);
         String audioFile = td.getAudio(point);
-        assertEquals(audioFile,"ladder.mp3");
+        assert(audioFile == "ladder.mp3");
     }
 
     @Test
@@ -24,7 +24,7 @@ public class TactileDAOTests {
         TactileDAO td = new TactileDAO();
         PointF point = new PointF(400, 1092);
         String audioFile = td.getAudio(point);
-        assertEquals(audioFile,"");
+        assert(audioFile == null);
     }
 
     @Test
