@@ -5,48 +5,54 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.media.MediaPlayer;
+import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * Handles the touch events.
  */
 
-public class TactileView extends View {
+public class TactileView extends View  {
 
-    public String aState = "1";
 
-    public long cmdTime;
+    public SparseArray<PointF> mActivePointers;
 
-    public float x;
-
-    public float y;
-
-    private SparseArray<PointF> mActivePointers;
     private Paint mPaint;
+
+    private GestureDetectorCompat mDetector;
 
     public TactileView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        Log.d("View", "in view");
 
+        TactileAudio tactileAudio = new TactileAudio();
+        MyGestureListener mgl = new MyGestureListener();
+        final GestureDetector.OnDoubleTapListener listener = new DoubleGesture();
+        mDetector = new GestureDetectorCompat(context, mgl);
+        mDetector.setOnDoubleTapListener(listener);
         initView();
     }
 
+
     private void initView() {
         mActivePointers = new SparseArray<PointF>();
+
         mActivePointers.put(1,new PointF(170, 860));
         mActivePointers.put(2,new PointF(750, 1070));
         mActivePointers.put(3,new PointF(985, 970));
         mActivePointers.put(4,new PointF(1090, 780));
         mActivePointers.put(5,new PointF(1870, 310));
         mActivePointers.put(6,new PointF(1560, 1340));
+        mActivePointers.put(7,new PointF(100, 60));
+        mActivePointers.put(8,new PointF(100, 220));
+        mActivePointers.put(9,new PointF(915, 1345));
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.CYAN);
@@ -56,43 +62,32 @@ public class TactileView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        x = getXPosition(event);
-        y = getYPosition(event);
 
-        switch (event.getAction()) {
+        mDetector.onTouchEvent(event);
 
-            case MotionEvent.ACTION_DOWN:
-
-            case MotionEvent.ACTION_POINTER_UP:
-            //case MotionEvent.ACTION_HOVER_EXIT: // Hide for now, might be too fast
-                this.onPress(event);
-                break;
-            default:
-                return false;
-        }
         return true;
     }
 
         /**
          * Fires on up motion
          *
-         * @param e
+         * @param
          * @return
          */
-    public boolean onPress(MotionEvent e) {
+    /*public boolean onPress(MotionEvent e) {
             /**
              * If x is less 0.10 and y is less that 0.10, state == 3, reset time
              */
-            Log.d("Position", "x: " + this.getXPosition(e) + "y: " + this.getYPosition(e));
-            if (this.getXPosition(e) < 0.10) {
+            /*Log.d("Position", "x: " + this.getXPosition(e) + "y: " + this.getYPosition(e));
+            if (this.getXPosition(e) < 100) {
                 //overview audio
-                if (this.getYPosition(e) < 0.10) {
+                if (this.getYPosition(e) < 150) {
                     if (System.currentTimeMillis() > (cmdTime + (2 * 60 * 1000))) {
-                        this.startCommand("command.mp3");
+                        this.startCommand("overall.mp3");
                     } else {
                         this.stopCommand();
                     }
-                } else if (this.getYPosition(e) < 0.20) {
+                } else if (this.getYPosition(e) < 280) {
                     //stop command
                     this.stopCommand();
                 }
@@ -100,119 +95,7 @@ public class TactileView extends View {
                 this.getAudio(e);
             }
             return true;
-        }
-
-        private void getAudio(MotionEvent e) {
-            try {
-                /*Float x = this.getXPosition(e);
-                Float y = this.getYPosition(e);*/
-                PointF event = new PointF(this.getXPosition(e), this.getYPosition(e));
-                Log.d("getAudio", "State is " + this.aState);
-                if (calculateDistance(event, new PointF(170, 860)) < 120) {
-                    if (this.aState == "1") {
-
-                        this.playCommand("windows.wav");
-                        this.aState = "2";
-                    } else if (aState == "2"){
-                        this.stopCommand();
-                    } else if (aState == "3" &&
-                            System.currentTimeMillis() > (cmdTime + (2 * 60 * 1000))) {
-                        this.playCommand("windows.wav");
-                        this.aState = "1";
-                    }
-                } else if (calculateDistance(event, new PointF(750, 1090)) < 120) {
-                    if (this.aState == "1") {
-
-                        this.playCommand("ladder.wav");
-                        this.aState = "2";
-                    } else if (aState == "2"){
-                        this.stopCommand();
-                    } else if (aState == "3" &&
-                            System.currentTimeMillis() > (cmdTime + (2 * 60 * 1000))) {
-                        this.playCommand("ladder.wav");
-                        this.aState = "1";
-                    }
-                } else if (calculateDistance(event, new PointF(980, 960)) < 120) {
-                    if (this.aState == "1") {
-
-                        this.playCommand("carfax.wav");
-                        this.aState = "2";
-                    } else if (aState == "2"){
-                        this.stopCommand();
-                    } else if (aState == "3" &&
-                            System.currentTimeMillis() > (cmdTime + (2 * 60 * 1000))) {
-                        this.playCommand("carfax.wav");
-                        this.aState = "1";
-                    }
-                } else if (calculateDistance(event, new PointF(1090, 780)) < 120) {
-                    if (this.aState == "1") {
-
-                        this.playCommand("stmarys.wav");
-                        this.aState = "2";
-                    } else if (aState == "2"){
-                        this.stopCommand();
-                    } else if (aState == "3" &&
-                            System.currentTimeMillis() > (cmdTime + (2 * 60 * 1000))) {
-                        this.playCommand("stmarys.wav");
-                        this.aState = "1";
-                    }
-                }   else if (calculateDistance(event, new PointF(1880, 320)) < 120) {
-                    if (this.aState == "1") {
-
-                        this.playCommand("allsaintsspire.wav");
-                        this.aState = "2";
-                    } else if (aState == "2"){
-                        this.stopCommand();
-                    } else if (aState == "3" &&
-                            System.currentTimeMillis() > (cmdTime + (2 * 60 * 1000))) {
-                        this.playCommand("allsaintsspire.wav");
-                        this.aState = "1";
-                    }
-                } else if (calculateDistance(event, new PointF(1550, 1340)) < 120) {
-                    if (this.aState == "1") {
-
-                        this.playCommand("staff.wav");
-                        this.aState = "2";
-                    } else if (aState == "2"){
-                        this.stopCommand();
-                    } else if (aState == "3" &&
-                            System.currentTimeMillis() > (cmdTime + (2 * 60 * 1000))) {
-                        this.playCommand("staff.wav");
-                        this.aState = "1";
-                    }
-                }
-            } catch (Exception ex) {
-                Log.d("Audio", ex.getMessage());
-            }
-        }
-
-    /**
-     * Function to calculate the distance between the MotionEvent and
-     * the stored point.
-     *
-     * @param p1
-     * @param p2
-     * @return
-     */
-        private double calculateDistance (PointF p1, PointF p2) {
-            return (double)Math.sqrt((double)Math.pow((p1.x - p2.x), 2.0)
-                                   + (double)Math.pow((p1.y - p2.y), 2.0));
-        }
-
-        private void startCommand(String fName) {
-            this.aState = "3";
-            this.cmdTime = System.currentTimeMillis();
-            new TactileMediaPlayer().execute(aState, fName);
-        }
-
-        private void playCommand(String fName) {
-            new TactileMediaPlayer().execute(aState, fName);
-        }
-
-        private void stopCommand() {
-            this.aState = "1";
-            new TactileMediaPlayer().execute(aState, "");
-        }
+        }*/
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -243,50 +126,52 @@ public class TactileView extends View {
         return mActivePointers;
     }
 
-        /**
-         * Get the X for the current position.
-         *
-         * @param event
-         * @return
-         */
-        public Float getXPosition(MotionEvent event) {
-            Float x = event.getX();
-            return x;
+    class DoubleGesture implements GestureDetector.OnDoubleTapListener {
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            return false;
         }
 
-        /**
-         * Get the Y for the current position.
-         *
-         * @param event
-         * @return
-         */
-        public Float getYPosition(MotionEvent event) {
-            Float y = event.getY();
-            return y;
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            PointF point = new PointF(this.getXPosition(e), this.getYPosition(e));
+            //tactileAudio.setAudio(point);
+            return false;
         }
 
-        /**
-         * Build the parameter string.
-         *
-         * @param x
-         * @param y
-         * @return
-         * @// TODO: 07/06/2017 refactor this. Think it is on the wrong spot
-         */
-        private String buildParams(Float x, Float y) {
-            StringBuilder result = new StringBuilder();
-            try {
-                result.append(URLEncoder.encode("x", "UTF-8"));
-                result.append("=");
-                result.append(x.toString());
-                result.append("&");
-                result.append(URLEncoder.encode("y", "UTF-8"));
-                result.append("=");
-                result.append(y.toString());
-            } catch (UnsupportedEncodingException ue) {
-                Log.d("ENCODE", ue.getMessage());
-            }
-            return result.toString();
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            return false;
         }
 
+        private float getXPosition( MotionEvent e) {
+        return e.getX();
+    }
+
+        private float getYPosition( MotionEvent e) {
+        return e.getY();
+    }
+    };
+
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final String DEBUG_TAG = "Gestures";
+
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            Log.d(DEBUG_TAG, "kittens");
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            return false;
+        }
+    }
 }
