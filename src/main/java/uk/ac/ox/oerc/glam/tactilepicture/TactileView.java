@@ -40,7 +40,9 @@ public class TactileView extends View  {
         initView();
     }
 
-
+    /**
+     * Function to set up the circles tobe drawn.
+     */
     private void initView() {
         mActivePointers = new SparseArray<PointF>();
 
@@ -67,35 +69,6 @@ public class TactileView extends View  {
 
         return true;
     }
-
-        /**
-         * Fires on up motion
-         *
-         * @param
-         * @return
-         */
-    /*public boolean onPress(MotionEvent e) {
-            /**
-             * If x is less 0.10 and y is less that 0.10, state == 3, reset time
-             */
-            /*Log.d("Position", "x: " + this.getXPosition(e) + "y: " + this.getYPosition(e));
-            if (this.getXPosition(e) < 100) {
-                //overview audio
-                if (this.getYPosition(e) < 150) {
-                    if (System.currentTimeMillis() > (cmdTime + (2 * 60 * 1000))) {
-                        this.startCommand("overall.mp3");
-                    } else {
-                        this.stopCommand();
-                    }
-                } else if (this.getYPosition(e) < 280) {
-                    //stop command
-                    this.stopCommand();
-                }
-            } else {
-                this.getAudio(e);
-            }
-            return true;
-        }*/
 
     @Override
     protected void onDraw(Canvas canvas) {

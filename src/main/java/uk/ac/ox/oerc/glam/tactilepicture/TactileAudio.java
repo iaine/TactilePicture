@@ -20,7 +20,7 @@ public class TactileAudio {
 
     public String aState = "1";
 
-    private String curFile = "";
+    private String curFile;
 
     private long cmdTime;
 
@@ -32,11 +32,23 @@ public class TactileAudio {
 
     private  TactileDAO tactileDAO;
 
+    private PlayerState state;
+
+    private int layer = 1;
+
     protected TactileAudio() {
         this.duration = this.setDuration();
         this.mediaPlayer = new MediaPlayer();
         this.tone = new Tone();
         this.tactileDAO = new TactileDAO();
+        this.curFile = "";
+        state.setState(PlayerState.PlayerStates.STOPPED);
+        /*this.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                su
+            }
+        });*/
     }
 
     /**
@@ -44,7 +56,7 @@ public class TactileAudio {
      * @return int
      */
     private int setDuration() {
-        return new TactileMediaPlayer(this.mediaPlayer).getMediaDuration("overall.mp3");
+        return new TactileMediaPlayer(this.mediaPlayer, state).getMediaDuration("overall.mp3");
     }
 
     /**
@@ -74,17 +86,34 @@ public class TactileAudio {
             if (audioFile != "") {
                 //play the tone first as an alert
                 tone.playTone();
-                if (audioFile == "overall.mp3") {
-                    this.startCommand(audioFile, mediaPlayer);
-                }
 
-                if (audioFile == curFile) {
-                    this.pauseCommand(mediaPlayer);
-                } else if (audioFile != curFile) {
-                    if (System.currentTimeMillis() > (cmdTime + this.duration)){
-                        this.playCommand(audioFile, mediaPlayer);
+                if (state.getState() == PlayerState.PlayerStates.STOPPED) {
+                    if (audioFile == "overall.mp3") {
+                        this.startCommand(audioFile, mediaPlayer);
+                    } else {
+                        this.playCommand(audioFile, this.curFile, mediaPlayer);
+                    }
+                } else if (state.getState() == PlayerState.PlayerStates.PLAYING) {
+                    if (this.curFile.equals(audioFile)) {
+                        this.pauseCommand(mediaPlayer);
+                    } else {
+                        if (System.currentTimeMillis() > (cmdTime + this.duration)){
+                            this.playCommand(audioFile, this.curFile, mediaPlayer);
+                            this.curFile = audioFile;
+                            Log.d("Play", "Current file " + this.curFile + " and audio " + audioFile);
+
+                        }
+                    }
+                } else if (state.getState() == PlayerState.PlayerStates.PAUSED) {
+                    if (audioFile.equals(this.curFile)){
+                        this.playCommand(audioFile, this.curFile, mediaPlayer);
+                    } else {
+                        this.stopCommand(mediaPlayer);
+                        this.playCommand(audioFile, this.curFile, mediaPlayer);
                     }
                 }
+                Log.d("Play", "SCurrent file " + this.curFile + " and audio " + audioFile);
+
             }
         } catch (Exception ex) {
             Log.d("Audio", ex.getMessage());
@@ -92,23 +121,22 @@ public class TactileAudio {
     }
 
     private void startCommand(String fName, MediaPlayer mediaPlayer) {
-        this.aState = "3";
         this.cmdTime = System.currentTimeMillis();
-        new TactileMediaPlayer(mediaPlayer).execute(aState, fName);
+        new TactileMediaPlayer(mediaPlayer, state).execute("play", fName, "");
+        state.setState(PlayerState.PlayerStates.PLAYING);
     }
 
-    private void playCommand(String fName, MediaPlayer mediaPlayer) {
-        new TactileMediaPlayer(mediaPlayer).execute(aState, fName);
+    private void playCommand(String fName, String current, MediaPlayer mediaPlayer) {
+        new TactileMediaPlayer(mediaPlayer, state).execute("play", fName, current);
     }
 
     private void stopCommand(MediaPlayer mediaPlayer) {
-        new TactileMediaPlayer(mediaPlayer).execute(aState, "");
+        new TactileMediaPlayer(mediaPlayer, state).execute("stop");
         this.resetDuration();
     }
 
     private void pauseCommand(MediaPlayer mediaPlayer) {
-        new TactileMediaPlayer(mediaPlayer).execute("4", "");
-        this.aState = "2";
+        new TactileMediaPlayer(mediaPlayer, state).execute("pause");
     }
 
 
