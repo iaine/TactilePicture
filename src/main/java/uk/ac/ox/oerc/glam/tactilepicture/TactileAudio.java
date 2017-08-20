@@ -3,7 +3,8 @@ package uk.ac.ox.oerc.glam.tactilepicture;
 import android.graphics.PointF;
 import android.media.MediaPlayer;
 import android.util.Log;
-import android.view.MotionEvent;
+
+import  uk.ac.ox.oerc.glam.tactilepicture.Tone;
 
 /**
  * Class to wrap around the Media Player
@@ -23,13 +24,19 @@ public class TactileAudio {
 
     private long cmdTime;
 
-    public int duration = 0;
+    public int duration;
 
     private MediaPlayer mediaPlayer;
+
+    private Tone tone;
+
+    private  TactileDAO tactileDAO;
 
     protected TactileAudio() {
         this.duration = this.setDuration();
         this.mediaPlayer = new MediaPlayer();
+        this.tone = new Tone();
+        this.tactileDAO = new TactileDAO();
     }
 
     /**
@@ -37,9 +44,7 @@ public class TactileAudio {
      * @return int
      */
     private int setDuration() {
-        int dur = 0;
-        dur = new TactileMediaPlayer(this.mediaPlayer).getMediaDuration("overview.mp3");
-        return dur;
+        return new TactileMediaPlayer(this.mediaPlayer).getMediaDuration("overall.mp3");
     }
 
     /**
@@ -56,27 +61,27 @@ public class TactileAudio {
      * @return
      */
     public void setAudio(PointF event) {
-        /**
-         * If x is less 0.10 and y is less that 0.10, state == 3, reset time
-         */
+
         try {
-            TactileDAO tactileDAO = new TactileDAO();
+
             //if stop, the stop all audio action
-            if (tactileDAO.getStop(event)) {
+            if (this.tactileDAO.getStop(event)) {
                 this.stopCommand(mediaPlayer);
             }
 
-            String audioFile = tactileDAO.getAudio(event);
+            String audioFile = this.tactileDAO.getAudio(event);
 
             if (audioFile != "") {
-                if (audioFile == "overview.mp3") {
+                //play the tone first as an alert
+                tone.playTone();
+                if (audioFile == "overall.mp3") {
                     this.startCommand(audioFile, mediaPlayer);
                 }
 
                 if (audioFile == curFile) {
                     this.pauseCommand(mediaPlayer);
                 } else if (audioFile != curFile) {
-                    if (System.currentTimeMillis() > (cmdTime + duration)){
+                    if (System.currentTimeMillis() > (cmdTime + this.duration)){
                         this.playCommand(audioFile, mediaPlayer);
                     }
                 }
@@ -105,5 +110,6 @@ public class TactileAudio {
         new TactileMediaPlayer(mediaPlayer).execute("4", "");
         this.aState = "2";
     }
+
 
 }

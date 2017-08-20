@@ -128,6 +128,11 @@ public class TactileView extends View  {
 
     class DoubleGesture implements GestureDetector.OnDoubleTapListener {
 
+        TactileAudio tactileAudio;
+        protected DoubleGesture() {
+            this.tactileAudio  = new TactileAudio();
+        }
+
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             return false;
@@ -136,7 +141,7 @@ public class TactileView extends View  {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             PointF point = new PointF(this.getXPosition(e), this.getYPosition(e));
-            //tactileAudio.setAudio(point);
+            this.tactileAudio.setAudio(point);
             return false;
         }
 
@@ -157,7 +162,6 @@ public class TactileView extends View  {
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final String DEBUG_TAG = "Gestures";
 
-
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             return false;
@@ -165,7 +169,6 @@ public class TactileView extends View  {
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            Log.d(DEBUG_TAG, "kittens");
             return false;
         }
 
