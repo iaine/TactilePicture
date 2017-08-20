@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by iain.emsley on 20/08/2017.
+ * Tests to set the layers for audio files
  */
 
 public class testTactileLayer {
@@ -21,6 +21,6 @@ public class testTactileLayer {
         TactileLayer tl = new TactileLayer();
         assertEquals("ONE", TactileLayer.TactileLayers.ONE.name());
         tl.setTactileLayers(TactileLayer.TactileLayers.TWO);
-        assertEquals("TWO", tl.getTactileLayers());
+        assertEquals("TWO", tl.getTactileLayers().name());
     }
 }
