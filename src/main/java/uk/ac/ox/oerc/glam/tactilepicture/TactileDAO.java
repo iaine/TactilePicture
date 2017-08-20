@@ -1,6 +1,7 @@
 package uk.ac.ox.oerc.glam.tactilepicture;
 
 import android.graphics.PointF;
+import android.util.Log;
 import android.view.MotionEvent;
 
 /**
@@ -13,7 +14,7 @@ public class TactileDAO {
 
     public String getAudio(PointF event) {
         if (calculateDistance(event, new PointF(170, 860)) < fingerPos) {
-            return "overview.mp3";
+            return "window.mp3";
         } else if (calculateDistance(event, new PointF(750, 1090)) < fingerPos) {
             return "ladder.mp3";
         } else if (calculateDistance(event, new PointF(980, 960)) < fingerPos) {
@@ -27,7 +28,7 @@ public class TactileDAO {
         } else if (calculateDistance(event, new PointF(915, 1354)) < fingerPos) {
             return "highstreet.mp3";
         } else if (calculateDistance(event, new PointF(75, 75)) < fingerPos) {
-            return "overview.mp3";
+            return "overall.mp3";
         }
 
         return "";
@@ -39,7 +40,10 @@ public class TactileDAO {
      * @return
      */
     public boolean getStop (PointF e) {
+        Log.d("Position", "stop is " + e);
+        Log.d("Position", "stop is " + calculateDistance(e, new PointF(75, 225)));
         if (calculateDistance(e, new PointF(75, 225)) < fingerPos) {
+            Log.d("Position", "Returning true");
             return true;
         }
         return false;

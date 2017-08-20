@@ -93,28 +93,32 @@ public class TactileAudio {
                     } else {
                         this.playCommand(audioFile, this.curFile, mediaPlayer);
                     }
+                    state.setState(PlayerState.PlayerStates.PLAYING);
                 } else if (state.getState() == PlayerState.PlayerStates.PLAYING) {
                     if (this.curFile.equals(audioFile)) {
+                        //Pause if these are the same
                         this.pauseCommand(mediaPlayer);
+                        state.setState(PlayerState.PlayerStates.PAUSED);
                     } else {
+                        //if this isn't the same file, play the new file
                         if (System.currentTimeMillis() > (cmdTime + this.duration)){
+                            this.stopCommand(mediaPlayer);
                             this.playCommand(audioFile, this.curFile, mediaPlayer);
                             this.curFile = audioFile;
-                            Log.d("Play", "Current file " + this.curFile + " and audio " + audioFile);
-
+                            state.setState(PlayerState.PlayerStates.PLAYING);
                         }
                     }
                 } else if (state.getState() == PlayerState.PlayerStates.PAUSED) {
                     if (audioFile.equals(this.curFile)){
                         this.playCommand(audioFile, this.curFile, mediaPlayer);
+                        state.setState(PlayerState.PlayerStates.PLAYING);
                     } else {
                         this.stopCommand(mediaPlayer);
                         this.playCommand(audioFile, this.curFile, mediaPlayer);
+                        state.setState(PlayerState.PlayerStates.PLAYING);
                     }
                 }
-                Log.d("Play", "SCurrent file " + this.curFile + " and audio " + audioFile);
-
-            }
+           }
         } catch (Exception ex) {
             Log.d("Audio", ex.getMessage());
         }
