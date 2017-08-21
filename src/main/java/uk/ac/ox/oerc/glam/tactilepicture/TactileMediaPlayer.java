@@ -52,11 +52,11 @@ public class TactileMediaPlayer extends AsyncTask<String,String,String> {
     }
 
 
-    public void PlayMedia(String fileName, String old) {
+    public void PlayMedia(String fileName, String Pos) {
+        Log.d("Play", "File " + fileName + " position " + Pos);
+        int seekPos  = (Pos !=  "0") ? Integer.parseInt(Pos): 0;
+
         //if the file isn't the same stop it.
-        if (!fileName.equals(old)) {
-            this.StopMedia();
-        }
         String PATH_TO_FILE = "/mus_audio/"+fileName;
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_MUSIC);
@@ -64,14 +64,14 @@ public class TactileMediaPlayer extends AsyncTask<String,String,String> {
         Log.d ("Play", "Filepath: " + file.toString());
 
         try {
-            if (this.mediaPlayer.isPlaying()) {
-                this.PauseMedia();
-            }
+
             this.mediaPlayer.setDataSource(file.toString());
             this.mediaPlayer.prepare();
+            if (seekPos > 0) {
+                this.mediaPlayer.seekTo(seekPos);
+            }
             this.mediaPlayer.start();
             this.mediaPlayer.setVolume((float)0.8, (float)0.8);
-            pstate.setState(PlayerState.PlayerStates.PLAYING);
         } catch (Exception e) {
             Log.d("Media", e.getStackTrace().toString());
         }
@@ -87,12 +87,12 @@ public class TactileMediaPlayer extends AsyncTask<String,String,String> {
     public void PauseMedia() {
         Log.d("Play", "Pause state");
         this.mediaPlayer.pause();
-        pstate.setState(PlayerState.PlayerStates.PAUSED);
+        this.mediaPlayer.reset();
     }
 
-    /*public PlayerStates getState(){
-        return this.state;
-    }*/
+    public int getCurrentPosition() {
+        return this.mediaPlayer.getCurrentPosition();
+    }
 
     /**
      * For now, only handle stop/start
