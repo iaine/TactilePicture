@@ -1,7 +1,7 @@
 package uk.ac.ox.oerc.glam.tactilepicture;
 
 /**
- * Created by iain.emsley on 20/08/2017.
+ * Holds the states for the audio player.
  */
 
 public class PlayerState {

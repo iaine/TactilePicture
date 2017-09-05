@@ -47,7 +47,7 @@ public class Tone {
         int mBufferSize = AudioTrack.getMinBufferSize(44100,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_8BIT);
-        Log.d("Tone", Integer.toString(mBufferSize));
+
         AudioTrack mAudioTrack =  new AudioTrack(AudioManager.STREAM_MUSIC, 44100,
                 AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,
                 mBufferSize, AudioTrack.MODE_STREAM);

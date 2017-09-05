@@ -2,7 +2,6 @@ package uk.ac.ox.oerc.glam.tactilepicture;
 
 import android.graphics.PointF;
 import android.util.Log;
-import android.view.MotionEvent;
 
 /**
  * Hard coded DAO for application
@@ -12,13 +11,13 @@ public class TactileDAO {
 
     private static int fingerPos = 75;
 
-    public String getAudio(PointF event) {
+    public String getAudio(PointF event, String tactileLayer) {
         if (calculateDistance(event, new PointF(170, 860)) < fingerPos) {
-            return "window.mp3";
+            return (tactileLayer == "ONE") ? "windows.wav" : "ladder.wav";
         } else if (calculateDistance(event, new PointF(750, 1090)) < fingerPos) {
-            return "ladder.mp3";
+            return (tactileLayer == "ONE") ? "ladder.wav" : "carfax.mp3";
         } else if (calculateDistance(event, new PointF(980, 960)) < fingerPos) {
-            return "carfax.mp3";
+            return (tactileLayer == "ONE") ? "carfax.mp3" : "stmarys.wav";
         } else if (calculateDistance(event, new PointF(1090, 780)) < fingerPos) {
             return "stmarys.wav";
         } else if (calculateDistance(event, new PointF(1880, 320)) < fingerPos) {
@@ -34,14 +33,24 @@ public class TactileDAO {
         return "";
     }
 
+    public String getAudioByName(String audioName) {
+        if (audioName == "windows.wav") {
+            return "ladder.wav";
+        } else if (audioName == "ladder.wav") {
+            return "carfax.mp3";
+        } else if (audioName == "carfax.mp3") {
+            return "stmarys.mp3";
+        }
+
+        return "";
+    }
+
     /**
      * Method that tests for closeness to stop
      * @param e
      * @return
      */
     public boolean getStop (PointF e) {
-        Log.d("Position", "stop is " + e);
-        Log.d("Position", "stop is " + calculateDistance(e, new PointF(75, 225)));
         if (calculateDistance(e, new PointF(75, 225)) < fingerPos) {
             Log.d("Position", "Returning true");
             return true;

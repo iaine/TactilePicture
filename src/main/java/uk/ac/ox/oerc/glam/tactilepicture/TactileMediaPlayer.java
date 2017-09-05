@@ -12,7 +12,7 @@ import static android.os.Environment.DIRECTORY_MUSIC;
 import static android.os.Environment.getExternalStorageState;
 
 /**
- * Created by iain.emsley on 11/06/2017.
+ * MediaPlayer functions.
  */
 
 public class TactileMediaPlayer extends AsyncTask<String,String,String> {
@@ -54,14 +54,13 @@ public class TactileMediaPlayer extends AsyncTask<String,String,String> {
 
     public void PlayMedia(String fileName, String Pos) {
         Log.d("Play", "File " + fileName + " position " + Pos);
-        int seekPos  = (Pos !=  "0") ? Integer.parseInt(Pos): 0;
+        int seekPos  = (Pos !=  "0" || Pos == "") ? Integer.parseInt(Pos): 0;
 
         //if the file isn't the same stop it.
         String PATH_TO_FILE = "/mus_audio/"+fileName;
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_MUSIC);
         File file = new File(path, PATH_TO_FILE);
-        Log.d ("Play", "Filepath: " + file.toString());
 
         try {
 
@@ -72,6 +71,7 @@ public class TactileMediaPlayer extends AsyncTask<String,String,String> {
             }
             this.mediaPlayer.start();
             this.mediaPlayer.setVolume((float)0.8, (float)0.8);
+
         } catch (Exception e) {
             Log.d("Media", e.getStackTrace().toString());
         }
@@ -85,7 +85,7 @@ public class TactileMediaPlayer extends AsyncTask<String,String,String> {
     }
 
     public void PauseMedia() {
-        Log.d("Play", "Pause state");
+        Log.d("Play", "Pause state in MP");
         this.mediaPlayer.pause();
         this.mediaPlayer.reset();
     }
