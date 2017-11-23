@@ -12,34 +12,44 @@ public class TactileDAO {
     private static int fingerPos = 75;
 
     public String getAudio(PointF event, String tactileLayer) {
-        if (calculateDistance(event, new PointF(170, 860)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "windows.wav" : "ladder.wav";
-        } else if (calculateDistance(event, new PointF(750, 1090)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "ladder.wav" : "carfax.mp3";
-        } else if (calculateDistance(event, new PointF(980, 960)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "carfax.mp3" : "stmarys.wav";
-        } else if (calculateDistance(event, new PointF(1090, 780)) < fingerPos) {
-            return "stmarys.wav";
-        } else if (calculateDistance(event, new PointF(1880, 320)) < fingerPos) {
-            return "allsaints.mp3";
-        } else if (calculateDistance(event, new PointF(1513, 1342)) < fingerPos) {
-            return "scholars.mp3";
-        } else if (calculateDistance(event, new PointF(915, 1354)) < fingerPos) {
-            return "highstreet.mp3";
-        } else if (calculateDistance(event, new PointF(75, 75)) < fingerPos) {
-            return "overall.mp3";
+        if (calculateDistance(event, new PointF(1495, 1898)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "statuette1.wav" : "statuette2.wav";
+        } else if (calculateDistance(event, new PointF(1011, 1893)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "head1.wav" : "head2.wav";
+        } else if (calculateDistance(event, new PointF(285, 1760)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "window1.wav" : "window2.mp3";
+        } else if (calculateDistance(event, new PointF(943, 1526)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "torso1.wav" : "torso2.mp3";
+        } else if (calculateDistance(event, new PointF(1533, 1027)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "table1.wav" : "table2.mp3";
+        } else if (calculateDistance(event, new PointF(1270, 620)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "cloth1.wav" : "cloth2.mp3";
+        } else if (calculateDistance(event, new PointF(120, 1150)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "medal1.mp3" : "medal2.mp3";
+        } else if (calculateDistance(event, new PointF(1520, 2280)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "overview.mp3" : "overview2.wav";
         }
 
         return "";
     }
 
     public String getAudioByName(String audioName) {
-        if (audioName == "windows.wav") {
-            return "ladder.wav";
-        } else if (audioName == "ladder.wav") {
-            return "carfax.mp3";
-        } else if (audioName == "carfax.mp3") {
-            return "stmarys.mp3";
+        if (audioName == "statuette1.wav") {
+            return "statuette2.wav";
+        } else if (audioName == "head1.wav") {
+            return "head2.wav";
+        } else if (audioName == "window1.wav") {
+            return "window2.wav";
+        } else if (audioName == "torso1.wav") {
+            return "torso2.mp3";
+        } else if (audioName == "table1.wav") {
+            return "table2.mp3";
+        } else if (audioName == "cloth1.wav") {
+            return "cloth2.mp3";
+        } else if (audioName == "medal1.mp3") {
+            return "medal2.mp3";
+        } else if (audioName == "overview.mp3") {
+            return "overview2.wav";
         }
 
         return "";
@@ -51,7 +61,7 @@ public class TactileDAO {
      * @return
      */
     public boolean getStop (PointF e) {
-        if (calculateDistance(e, new PointF(75, 225)) < fingerPos) {
+        if (calculateDistance(e, new PointF(1520, 2180)) < fingerPos) {
             Log.d("Position", "Returning true");
             return true;
         }

@@ -47,12 +47,8 @@ public class TactileAudio {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 if (tl.getTactileLayers() == TactileLayer.TactileLayers.ONE) {
-                    //TactileAudio tactileAudio = new TactileAudio();
-                    //tactileAudio.playCommand(tactileDAO.getAudioByName(audioFile),"0",mp);
-                    //TactileDAO tDao = new TactileDAO();
                     String newLevelAudio = tactileDAO.getAudioByName(audioFile);
                     curPos = 0;
-                    Log.d("Play", "Autoplay " + newLevelAudio + " old: " + audioFile + " currentPos" + curPos);
                     curFile = newLevelAudio;
                     mediaPlayer.stop();
                     mediaPlayer.reset();
@@ -90,11 +86,10 @@ public class TactileAudio {
     /**
      * Get the audio from the DAO and handle the player
      *
-     * @param event
-     * @return
+     * @param event PointF from the screen
      */
-    public void setAudio(PointF event) {
-
+    public boolean setAudio(PointF event) {
+        boolean aState = false;
         try {
 
             //if stop, the stop all audio action
@@ -112,7 +107,6 @@ public class TactileAudio {
                 //play the tone first as an alert
                 tone.playTone();
 
-                Log.d("Play", "State " + state.getState().name() + " level: " + tl.getTactileLayers().name());
                 if (state.getState() == PlayerState.PlayerStates.STOPPED) {
                     if (audioFile == "overall.mp3") {
                         this.startCommand(audioFile, mediaPlayer);
@@ -122,15 +116,14 @@ public class TactileAudio {
                         this.curFile = audioFile;
                     }
                     state.setState(PlayerState.PlayerStates.PLAYING);
+
                 } else if (state.getState() == PlayerState.PlayerStates.PLAYING) {
-                    Log.d("Play", "State playing "+ audioFile + "current pos: " + curPos + " file " + curFile);
                     if (this.curFile.equals(audioFile)) {
                         //if layer is one, switch to two and play
                         if (tl.getTactileLayers() == TactileLayer.TactileLayers.ONE) {
                             tl.setTactileLayers(TactileLayer.TactileLayers.TWO);
                             layer = tl.getTactileLayers().name();
                             audioFile = this.tactileDAO.getAudio(event, layer);
-                            Log.d("Play", "playing "+ audioFile + "current pos: " + curPos + " file " + curFile);
                             this.pauseCommand(mediaPlayer);
                             curPos = 0;
                             this.playCommand(audioFile, this.getPos(curPos),mediaPlayer);
@@ -148,14 +141,12 @@ public class TactileAudio {
                         if (System.currentTimeMillis() > (cmdTime + this.duration)){
                             this.stopCommand(mediaPlayer);
                             curPos = 0;
-                            Log.d("Play", "splaying "+ audioFile + "current pos: " + curPos + " file " + curFile);
                             this.playCommand(audioFile, this.getPos(curPos), mediaPlayer);
                             this.curFile = audioFile;
                             state.setState(PlayerState.PlayerStates.PLAYING);
                         }
                     }
                 } else if (state.getState() == PlayerState.PlayerStates.PAUSED) {
-                    Log.d("Play", "paused "+ audioFile + "current pos: " + curPos + " file " + curFile);
                     if (audioFile.equals(this.curFile)){
                         this.playCommand(audioFile, this.getPos(curPos), mediaPlayer);
                         curPos = 0;
@@ -173,10 +164,13 @@ public class TactileAudio {
                         state.setState(PlayerState.PlayerStates.PLAYING);
                     }
                 }
+                return true;
            }
+
         } catch (Exception ex) {
             Log.d("Audio", ex.getMessage());
         }
+        return false;
     }
 
     private String getPos (int pos) {
@@ -190,7 +184,6 @@ public class TactileAudio {
     }
 
     private void playCommand(String fName, String pos, MediaPlayer mediaPlayer) {
-        Log.d("Play", "Calling play on " + fName + " at " + pos);
         new TactileMediaPlayer(mediaPlayer, state).execute("play", fName, pos);
     }
 
