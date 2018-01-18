@@ -12,44 +12,44 @@ public class TactileDAO {
     private static int fingerPos = 75;
 
     public String getAudio(PointF event, String tactileLayer) {
-        if (calculateDistance(event, new PointF(1495, 1898)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "statuette1.wav" : "statuette2.wav";
-        } else if (calculateDistance(event, new PointF(1011, 1893)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "head1.wav" : "head2.wav";
-        } else if (calculateDistance(event, new PointF(285, 1760)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "window1.wav" : "window2.mp3";
-        } else if (calculateDistance(event, new PointF(943, 1526)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "torso1.wav" : "torso2.mp3";
-        } else if (calculateDistance(event, new PointF(1533, 1027)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "table1.wav" : "table2.mp3";
-        } else if (calculateDistance(event, new PointF(1270, 620)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "cloth1.wav" : "cloth2.mp3";
-        } else if (calculateDistance(event, new PointF(120, 1150)) < fingerPos) {
+        if (calculateDistance(event, new PointF(46, 448)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "statuette1.mp3" : "statuette2.mp3";
+        } else if (calculateDistance(event, new PointF(535, 446)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "head1.mp3" : "head2.mp3";
+        } else if (calculateDistance(event, new PointF(1270, 575)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "window1.mp3" : "window2.mp3";
+        } else if (calculateDistance(event, new PointF(630, 818)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "torso1.mp3" : "torso2.mp3";
+        } else if (calculateDistance(event, new PointF(50, 1307)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "table1.mp3" : "table2.mp3";
+        } else if (calculateDistance(event, new PointF(301,1755)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "cloth1.mp3" : "cloth2.mp3";
+        } else if (calculateDistance(event, new PointF(1444, 1235)) < fingerPos) {
             return (tactileLayer == "ONE") ? "medal1.mp3" : "medal2.mp3";
-        } else if (calculateDistance(event, new PointF(1520, 2280)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "overview.mp3" : "overview2.wav";
+        } else if (calculateDistance(event, new PointF(54, 82)) < fingerPos) {
+            return (tactileLayer == "ONE") ? "overview.mp3" : "overview2.mp3";
         }
 
         return "";
     }
 
     public String getAudioByName(String audioName) {
-        if (audioName == "statuette1.wav") {
-            return "statuette2.wav";
-        } else if (audioName == "head1.wav") {
-            return "head2.wav";
-        } else if (audioName == "window1.wav") {
-            return "window2.wav";
-        } else if (audioName == "torso1.wav") {
+        if (audioName == "statuette1.mp3") {
+            return "statuette2.mp3";
+        } else if (audioName == "head1.mp3") {
+            return "head2.mp3";
+        } else if (audioName == "window1.mp3") {
+            return "window2.mp3";
+        } else if (audioName == "torso1.mp3") {
             return "torso2.mp3";
-        } else if (audioName == "table1.wav") {
+        } else if (audioName == "table1.mp3") {
             return "table2.mp3";
-        } else if (audioName == "cloth1.wav") {
+        } else if (audioName == "cloth1.mp3") {
             return "cloth2.mp3";
         } else if (audioName == "medal1.mp3") {
             return "medal2.mp3";
         } else if (audioName == "overview.mp3") {
-            return "overview2.wav";
+            return "overview2.mp3";
         }
 
         return "";
@@ -61,8 +61,7 @@ public class TactileDAO {
      * @return
      */
     public boolean getStop (PointF e) {
-        if (calculateDistance(e, new PointF(1520, 2180)) < fingerPos) {
-            Log.d("Position", "Returning true");
+        if (calculateDistance(e, new PointF(54, 187)) < fingerPos) {
             return true;
         }
         return false;

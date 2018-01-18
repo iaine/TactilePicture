@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
@@ -42,6 +43,7 @@ public class TactileView extends View  {
         mDetector.setOnDoubleTapListener(dgl);
         button = false;
         initView();
+
     }
 
     /**
@@ -49,21 +51,42 @@ public class TactileView extends View  {
      */
     private void initView() {
         mActivePointers = new SparseArray<PointF>();
+        DisplayMetrics metrics = this.getResources().getDisplayMetrics();
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        //float width = _tmp.getWidth();
+        //float height = this.getHeight();
 
-        mActivePointers.put(1,new PointF(1520, 2280)); //start
-        mActivePointers.put(2,new PointF(1520, 2140)); //stop
-        mActivePointers.put(3,new PointF(1495, 1898));
-        mActivePointers.put(4,new PointF(1011, 1893));
-        mActivePointers.put(5,new PointF(285, 1760));
-        mActivePointers.put(6,new PointF(943, 1526));
-        mActivePointers.put(7,new PointF(1533, 1027));
-        mActivePointers.put(8,new PointF(1270, 620));
-        mActivePointers.put(9,new PointF(120, 1150));
-
+        mActivePointers.put(1,new PointF(54, 82)); //start
+        mActivePointers.put(2,new PointF(54, 187)); //stop
+        mActivePointers.put(3,new PointF(46, 448));
+        mActivePointers.put(4,new PointF(535, 446));
+        mActivePointers.put(5,new PointF(1270, 575));
+        mActivePointers.put(6,new PointF(630, 818));
+        mActivePointers.put(7,new PointF(50, 1307));
+        mActivePointers.put(8,new PointF(301,1755));
+        mActivePointers.put(9,new PointF(1444, 1235));
+        /*
+        Test code for the
+        float newWidth = (float)(width * 0.08677685950413223);
+        //float newHeight = (float)(height * 0.164021164021164);
+        //mActivePointers.put(1,new PointF(this.setPoint(0.08677685950413223, width), this.setPoint(0.164021164021164, height)));
+        //Log.d("Device", "width: " + width);
+        //Log.d("Device", "height: " + height);*/
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.CYAN);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
+    }
+
+    /**
+     * Function to calculate the return point
+     * @param arrayPoint
+     * @param dimension
+     * @return
+     */
+    private float setPoint(double arrayPoint, int dimension) {
+        return (float)(arrayPoint * dimension);
     }
 
     @Override

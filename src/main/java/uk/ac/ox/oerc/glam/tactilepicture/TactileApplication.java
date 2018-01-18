@@ -10,12 +10,19 @@ import android.app.Application;
 public class TactileApplication extends Application {
     private static Context mContext;
 
+    public static TactileApplication instance;
+
     public void onCreate() {
         super.onCreate();
+        instance = this;
         mContext = getApplicationContext();
     }
 
     public static Context getAppContext() {
         return mContext;
+    }
+
+    public static TactileApplication getInstance() {
+        return instance;
     }
 }

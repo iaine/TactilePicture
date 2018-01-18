@@ -47,20 +47,21 @@ public class TactileAudio {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 if (tl.getTactileLayers() == TactileLayer.TactileLayers.ONE) {
-                    String newLevelAudio = tactileDAO.getAudioByName(audioFile);
+                    /*String newLevelAudio = tactileDAO.getAudioByName(audioFile);
                     curPos = 0;
-                    curFile = newLevelAudio;
+                    curFile = newLevelAudio;*/
                     mediaPlayer.stop();
                     mediaPlayer.reset();
                     tl.setTactileLayers(TactileLayer.TactileLayers.TWO);
-                    new TactileMediaPlayer(mediaPlayer, state).execute("play",
-                            newLevelAudio, "0");
+                    state.setState(PlayerState.PlayerStates.STOPPED);
+                    /*new TactileMediaPlayer(mediaPlayer, state).execute("play",
+                            newLevelAudio, "0");*/
 
                 } else {
                     mediaPlayer.stop();
                     mediaPlayer.reset();
                     tl.setTactileLayers(TactileLayer.TactileLayers.ONE);
-                    curPos = 0;
+                    /*curPos = 0; */
                     //new TactileMediaPlayer(mediaPlayer, state).execute("stop");
                     state.setState(PlayerState.PlayerStates.STOPPED);
                 }
@@ -97,6 +98,8 @@ public class TactileAudio {
                 this.stopCommand(mediaPlayer);
                 curPos = 0;
                 this.curFile = "";
+                layer = tl.getTactileLayers().name();
+                audioFile = this.tactileDAO.getAudio(event, layer);
                 state.setState(PlayerState.PlayerStates.STOPPED);
             }
 
@@ -108,10 +111,29 @@ public class TactileAudio {
                 tone.playTone();
 
                 if (state.getState() == PlayerState.PlayerStates.STOPPED) {
+
                     if (audioFile == "overall.mp3") {
                         this.startCommand(audioFile, mediaPlayer);
                     } else {
                         curPos = 0;
+                        Log.d("Play", "inbound " + curFile + " audio " + audioFile + " layer " + layer);
+                        // if the file has swapped, then move back to layer 1
+                        if (curFile != audioFile && !curFile.isEmpty()) {
+                            Log.d("Play", "current " + curFile + " audio " + audioFile);
+                            //if (curFile.substring(0,4) != audioFile.substring(0, 4)) {
+                                tl.setTactileLayers(TactileLayer.TactileLayers.ONE);
+                                layer = tl.getTactileLayers().name();
+                                audioFile = this.tactileDAO.getAudio(event, layer);
+                            //}
+                        } else if (curFile == audioFile && !curFile.isEmpty()) {
+                            if (layer == "ONE") {
+                                tl.setTactileLayers(TactileLayer.TactileLayers.TWO);
+                            }
+                        }
+
+                        //layer = tl.getTactileLayers().name();
+                        //audioFile = this.tactileDAO.getAudio(event, layer);
+                        Log.d("Play", "current2 " + curFile + " audio file " + audioFile);
                         this.playCommand(audioFile, this.getPos(curPos),mediaPlayer);
                         this.curFile = audioFile;
                     }
@@ -129,22 +151,26 @@ public class TactileAudio {
                             this.playCommand(audioFile, this.getPos(curPos),mediaPlayer);
                             curFile = audioFile;
                         } else {
+
                             //Pause if these are the same
                             curPos = 0;
                             //if layer is two, pause.
                             this.pauseCommand(mediaPlayer);
                             curFile = audioFile;
-                            state.setState(PlayerState.PlayerStates.PAUSED);
+                            tl.setTactileLayers(TactileLayer.TactileLayers.ONE);
+                            state.setState(PlayerState.PlayerStates.STOPPED);
                         }
                     } else {
                         //if this isn't the same file, play the new file
-                        if (System.currentTimeMillis() > (cmdTime + this.duration)){
                             this.stopCommand(mediaPlayer);
+                            Log.d("Play", "Layer" + layer + "New file");
                             curPos = 0;
+                            tl.setTactileLayers(TactileLayer.TactileLayers.ONE);
+                            layer = tl.getTactileLayers().name();
+                            audioFile = this.tactileDAO.getAudio(event, layer);
                             this.playCommand(audioFile, this.getPos(curPos), mediaPlayer);
                             this.curFile = audioFile;
                             state.setState(PlayerState.PlayerStates.PLAYING);
-                        }
                     }
                 } else if (state.getState() == PlayerState.PlayerStates.PAUSED) {
                     if (audioFile.equals(this.curFile)){
@@ -189,6 +215,7 @@ public class TactileAudio {
 
     private void stopCommand(MediaPlayer mediaPlayer) {
         new TactileMediaPlayer(mediaPlayer, state).execute("stop");
+        tl.setTactileLayers(TactileLayer.TactileLayers.ONE);
         this.resetDuration();
     }
 
