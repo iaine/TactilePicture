@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
@@ -16,6 +17,10 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+
+import org.json.JSONException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Handles the touch events.
@@ -34,16 +39,36 @@ public class TactileView extends View  {
 
     public TactileAudio tactileAudio;
 
+    public Context context;
+
+    public JSONArray jsonArray;
+
     public TactileView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        //check for connection
+        setUpData();
 
         tactileAudio = new TactileAudio();
         DoubleGesture dgl = new DoubleGesture();
         mDetector = new GestureDetectorCompat(context, dgl);
         mDetector.setOnDoubleTapListener(dgl);
         button = false;
+
         initView();
 
+    }
+
+    /**
+     * Method to load data
+     * If the wifi is on, then load the url and write the
+     * data form the disk
+     */
+    private void setUpData() {
+        WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+        if (wifi.isWifiEnabled()){
+          GetJSON getJSON = new GetJSON();
+          getJSON.getJSON("http://demeter.oerc.ox.ac.uk/glam/boy/json");
+        }
     }
 
     /**
@@ -54,29 +79,35 @@ public class TactileView extends View  {
         DisplayMetrics metrics = this.getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
         int height = metrics.heightPixels;
-        //float width = _tmp.getWidth();
-        //float height = this.getHeight();
 
-        mActivePointers.put(1,new PointF(54, 82)); //start
-        mActivePointers.put(2,new PointF(54, 187)); //stop
-        mActivePointers.put(3,new PointF(46, 448));
-        mActivePointers.put(4,new PointF(535, 446));
-        mActivePointers.put(5,new PointF(1270, 575));
-        mActivePointers.put(6,new PointF(630, 818));
-        mActivePointers.put(7,new PointF(50, 1307));
-        mActivePointers.put(8,new PointF(301,1755));
-        mActivePointers.put(9,new PointF(1444, 1235));
-        /*
-        Test code for the
-        float newWidth = (float)(width * 0.08677685950413223);
-        //float newHeight = (float)(height * 0.164021164021164);
-        //mActivePointers.put(1,new PointF(this.setPoint(0.08677685950413223, width), this.setPoint(0.164021164021164, height)));
-        //Log.d("Device", "width: " + width);
-        //Log.d("Device", "height: " + height);*/
+        try {
+            JSONObject json = getDataforInit();
+            jsonArray = json.getJSONArray("points");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject c = jsonArray.getJSONObject(i);
+                mActivePointers.put(i, new PointF(this.setPoint(c.optDouble("x"), width),
+                        this.setPoint(c.optDouble("y"), height)));
+            }
+
+        } catch (JSONException je) {
+            je.printStackTrace();
+        }
+
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.CYAN);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
+    }
+
+    private JSONObject getDataforInit() {
+        JSONObject jsonObject = null;
+        try {
+            GetJSON getJSON = new GetJSON();
+            jsonObject = getJSON.ParseJSON();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
     }
 
     /**
@@ -89,41 +120,53 @@ public class TactileView extends View  {
         return (float)(arrayPoint * dimension);
     }
 
+    /**
+     * Method to handle the double touch gesture event.
+     * @param event
+     * @return
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        /*Log.d("Gesture", "Masked Event: " + MotionEvent.actionToString(event.getActionMasked()));
-        Log.d("Gesture", "Event: " + MotionEvent.actionToString(event.getAction()));
-        Log.d("Gesture", "Log state is " + mDetector.onTouchEvent(event));
-        if (mDetector.onTouchEvent(event) == true) {
-            Log.d("Gesture", "inside loop");
-            switch(event.getActionMasked()){
-                case MotionEvent.ACTION_POINTER_DOWN:
-                case MotionEvent.ACTION_DOWN:
-                    tactileAudio.setAudio(this.findEventPoint(event));
-            }
-        }*/
         mDetector.onTouchEvent(event);
         return true;
     }
 
+    /**
+     * Method to get the point within the
+     * @param e
+     * @return
+     */
     private PointF findEventPoint(MotionEvent e) {
         int pointer = e.getActionIndex();
         int pointerId = e.getPointerId(pointer);
-        Log.d("Gesture", "x " + this.getXPosition(e, pointerId) + " y " + this.getYPosition(e, pointerId));
         PointF point = new PointF(this.getXPosition(e, pointerId), this.getYPosition(e, pointerId));
-        Log.d("Gesture", "Pointer is " + pointerId);
         return point;
     }
 
+    /**
+     * Method to get the Y position from the event and the pointer setting it off
+     * @param e
+     * @param pointer
+     * @return
+     */
     private float getYPosition( MotionEvent e, int pointer) {
         return e.getY(pointer);
     }
 
+    /**
+     * Method to get the X position from the event and the pointer setting it off
+     * @param e
+     * @param pointer
+     * @return
+     */
     private float getXPosition( MotionEvent e, int pointer) {
         return e.getX(pointer);
     }
 
-    @Override
+    /**
+     * Method to create the dots on the screen.
+     * @param canvas
+     */
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         // draw all pointers
@@ -164,22 +207,20 @@ public class TactileView extends View  {
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            this.tactileAudio.setAudio(this.findEventPoint(e));
+            this.tactileAudio.setAudio(this.findEventPoint(e), jsonArray);
             return false;
         }
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            this.tactileAudio.setAudio(this.findEventPoint(e));
+            this.tactileAudio.setAudio(this.findEventPoint(e), jsonArray);
             return false;
         }
 
         private PointF findEventPoint(MotionEvent e) {
             int pointer = e.getActionIndex();
             int pointerId = e.getPointerId(pointer);
-            Log.d("Gesture", "x " + this.getXPosition(e, pointerId) + " y " + this.getYPosition(e, pointerId));
             PointF point = new PointF(this.getXPosition(e, pointerId), this.getYPosition(e, pointerId));
-            Log.d("Gesture", "Pointer is " + pointerId);
             return point;
         }
 
@@ -189,8 +230,7 @@ public class TactileView extends View  {
         }
 
         public void onLongPress(MotionEvent e) {
-            //Log.d("Gesture", "Long press detected");
-            this.tactileAudio.setAudio(this.findEventPoint(e));
+            this.tactileAudio.setAudio(this.findEventPoint(e), jsonArray);
         }
 
         private float getXPosition( MotionEvent e, int pointer) {
