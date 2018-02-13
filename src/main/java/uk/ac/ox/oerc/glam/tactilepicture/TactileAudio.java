@@ -4,6 +4,8 @@ import android.graphics.PointF;
 import android.media.MediaPlayer;
 import android.util.Log;
 
+import org.json.JSONArray;
+
 import  uk.ac.ox.oerc.glam.tactilepicture.Tone;
 
 /**
@@ -89,7 +91,7 @@ public class TactileAudio {
      *
      * @param event PointF from the screen
      */
-    public boolean setAudio(PointF event) {
+    public boolean setAudio(PointF event, JSONArray jsonArray) {
         boolean aState = false;
         try {
 
@@ -99,12 +101,12 @@ public class TactileAudio {
                 curPos = 0;
                 this.curFile = "";
                 layer = tl.getTactileLayers().name();
-                audioFile = this.tactileDAO.getAudio(event, layer);
+                audioFile = this.tactileDAO.getAudio(event, layer, jsonArray);
                 state.setState(PlayerState.PlayerStates.STOPPED);
             }
 
             layer = tl.getTactileLayers().name();
-            audioFile = this.tactileDAO.getAudio(event, layer);
+            audioFile = this.tactileDAO.getAudio(event, layer, jsonArray);
 
             if (audioFile != "") {
                 //play the tone first as an alert
@@ -116,14 +118,13 @@ public class TactileAudio {
                         this.startCommand(audioFile, mediaPlayer);
                     } else {
                         curPos = 0;
-                        Log.d("Play", "inbound " + curFile + " audio " + audioFile + " layer " + layer);
                         // if the file has swapped, then move back to layer 1
                         if (curFile != audioFile && !curFile.isEmpty()) {
                             Log.d("Play", "current " + curFile + " audio " + audioFile);
                             //if (curFile.substring(0,4) != audioFile.substring(0, 4)) {
                                 tl.setTactileLayers(TactileLayer.TactileLayers.ONE);
                                 layer = tl.getTactileLayers().name();
-                                audioFile = this.tactileDAO.getAudio(event, layer);
+                                audioFile = this.tactileDAO.getAudio(event, layer, jsonArray);
                             //}
                         } else if (curFile == audioFile && !curFile.isEmpty()) {
                             if (layer == "ONE") {
@@ -131,9 +132,6 @@ public class TactileAudio {
                             }
                         }
 
-                        //layer = tl.getTactileLayers().name();
-                        //audioFile = this.tactileDAO.getAudio(event, layer);
-                        Log.d("Play", "current2 " + curFile + " audio file " + audioFile);
                         this.playCommand(audioFile, this.getPos(curPos),mediaPlayer);
                         this.curFile = audioFile;
                     }
@@ -145,7 +143,7 @@ public class TactileAudio {
                         if (tl.getTactileLayers() == TactileLayer.TactileLayers.ONE) {
                             tl.setTactileLayers(TactileLayer.TactileLayers.TWO);
                             layer = tl.getTactileLayers().name();
-                            audioFile = this.tactileDAO.getAudio(event, layer);
+                            audioFile = this.tactileDAO.getAudio(event, layer, jsonArray);
                             this.pauseCommand(mediaPlayer);
                             curPos = 0;
                             this.playCommand(audioFile, this.getPos(curPos),mediaPlayer);
@@ -163,11 +161,10 @@ public class TactileAudio {
                     } else {
                         //if this isn't the same file, play the new file
                             this.stopCommand(mediaPlayer);
-                            Log.d("Play", "Layer" + layer + "New file");
                             curPos = 0;
                             tl.setTactileLayers(TactileLayer.TactileLayers.ONE);
                             layer = tl.getTactileLayers().name();
-                            audioFile = this.tactileDAO.getAudio(event, layer);
+                            audioFile = this.tactileDAO.getAudio(event, layer, jsonArray);
                             this.playCommand(audioFile, this.getPos(curPos), mediaPlayer);
                             this.curFile = audioFile;
                             state.setState(PlayerState.PlayerStates.PLAYING);
@@ -182,7 +179,7 @@ public class TactileAudio {
                         curPos = 0;
                         tl.setTactileLayers(TactileLayer.TactileLayers.ONE);
                         layer = tl.getTactileLayers().name();
-                        audioFile = this.tactileDAO.getAudio(event, layer);
+                        audioFile = this.tactileDAO.getAudio(event, layer, jsonArray);
                         this.playCommand(audioFile, this.getPos(curPos), mediaPlayer);
                         this.curFile = audioFile;
                         //set states. Assume if pause, we've cycled through states

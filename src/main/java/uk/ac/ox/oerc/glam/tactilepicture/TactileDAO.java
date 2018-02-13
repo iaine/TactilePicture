@@ -3,6 +3,10 @@ package uk.ac.ox.oerc.glam.tactilepicture;
 import android.graphics.PointF;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Hard coded DAO for application
  */
@@ -11,47 +15,63 @@ public class TactileDAO {
 
     private static int fingerPos = 75;
 
-    public String getAudio(PointF event, String tactileLayer) {
-        if (calculateDistance(event, new PointF(46, 448)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "statuette1.mp3" : "statuette2.mp3";
-        } else if (calculateDistance(event, new PointF(535, 446)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "head1.mp3" : "head2.mp3";
-        } else if (calculateDistance(event, new PointF(1270, 575)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "window1.mp3" : "window2.mp3";
-        } else if (calculateDistance(event, new PointF(630, 818)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "torso1.mp3" : "torso2.mp3";
-        } else if (calculateDistance(event, new PointF(50, 1307)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "table1.mp3" : "table2.mp3";
-        } else if (calculateDistance(event, new PointF(301,1755)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "cloth1.mp3" : "cloth2.mp3";
-        } else if (calculateDistance(event, new PointF(1444, 1235)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "medal1.mp3" : "medal2.mp3";
-        } else if (calculateDistance(event, new PointF(54, 82)) < fingerPos) {
-            return (tactileLayer == "ONE") ? "overview.mp3" : "overview2.mp3";
+    /**
+     * Method to the audio regarding the
+     * @param event
+     * @param tactileLayer
+     * @param jsonArray
+     * @return
+     */
+    public String getAudio(PointF event, String tactileLayer, JSONArray jsonArray) {
+
+        try {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject c = jsonArray.getJSONObject(i);
+                float x = this.getFloat(c,"x");
+                float y = this.getFloat(c,"y");
+                if (calculateDistance(event,new PointF(x,y)) < fingerPos){
+                    return (tactileLayer == "ONE") ? c.getString("ONE") : c.getString("TWO");
+                }
+            }
+        } catch (JSONException jse) {
+            jse.toString();
         }
 
         return "";
     }
 
-    public String getAudioByName(String audioName) {
-        if (audioName == "statuette1.mp3") {
-            return "statuette2.mp3";
-        } else if (audioName == "head1.mp3") {
-            return "head2.mp3";
-        } else if (audioName == "window1.mp3") {
-            return "window2.mp3";
-        } else if (audioName == "torso1.mp3") {
-            return "torso2.mp3";
-        } else if (audioName == "table1.mp3") {
-            return "table2.mp3";
-        } else if (audioName == "cloth1.mp3") {
-            return "cloth2.mp3";
-        } else if (audioName == "medal1.mp3") {
-            return "medal2.mp3";
-        } else if (audioName == "overview.mp3") {
-            return "overview2.mp3";
-        }
+    /**
+     * Cast the Double in the JSON Object to a float
+     * @param jObj
+     * @param c
+     * @return
+     */
+    private float getFloat(JSONObject jObj, String c) {
+        return (float)jObj.optDouble(c);
+    }
 
+    /**
+     * Method to get the second layer of audio where the first is known
+     *
+     * @param audioName
+     * @param jsonArray
+     * @return
+     */
+    public String getAudioByName(String audioName, JSONArray jsonArray) {
+
+        try {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject c = jsonArray.getJSONObject(i);
+                float x = this.getFloat(c,"x");
+                float y = this.getFloat(c,"y");
+                if (c.getString("ONE").equals(audioName)) {
+                    return c.getString("TWO");
+                }
+
+            }
+        } catch (JSONException jse) {
+            jse.toString();
+        }
         return "";
     }
 
