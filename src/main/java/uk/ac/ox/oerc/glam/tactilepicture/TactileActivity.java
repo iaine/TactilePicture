@@ -16,12 +16,12 @@ public class TactileActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
 
         // use the Exception Handler to do the restart
-        //Thread.setDefaultUncaughtExceptionHandler(new TactileExceptionHandler(this));
+        Thread.setDefaultUncaughtExceptionHandler(new TactileExceptionHandler(this));
         // keep the screen on whilst app running
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        /*if (getIntent().getBooleanExtra("crash", false)) {
+        if (getIntent().getBooleanExtra("crash", false)) {
             Toast.makeText(this, "App restarted after crash", Toast.LENGTH_SHORT).show();
-        }*/
+        }
         //throw new NullPointerException();
         setContentView(new TactileView(this, null));
     }
