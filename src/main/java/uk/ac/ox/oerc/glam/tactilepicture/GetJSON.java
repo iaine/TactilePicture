@@ -1,6 +1,7 @@
 package uk.ac.ox.oerc.glam.tactilepicture;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Cache;
 import com.android.volley.Network;
@@ -65,6 +66,7 @@ public class GetJSON {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO Auto-generated method stub
+                        Log.d("File", "File retrieval error: " + error.toString());
 
                     }
                 });
@@ -76,9 +78,11 @@ public class GetJSON {
         JSONObject json = null;
         String jsonString = readData();
         try {
-           json  = new JSONObject(jsonString);
+            if (jsonString != null) {
+                json = new JSONObject(jsonString);
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d("File", "JSON Handling " + e.toString());
         }
         return json;
     }
@@ -87,25 +91,32 @@ public class GetJSON {
         FileOutputStream outputStream;
         String filename = "data.json";
         try {
-            File file = new File(mContext.getCacheDir(), filename);
+            File file = new File(mContext.getExternalFilesDir(null), filename);
             // test if file exists.
             if (!file.exists()) {
                 file.createNewFile();
             }
+            Log.d("File", "Writing to " + filename.toString());
             outputStream = new FileOutputStream(file, true);
             outputStream.write(params.getBytes());
             outputStream.flush();
             outputStream.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d("File", "Write exception " + e.toString());
         }
     }
 
     public String readData() {
         String ret = null;
         try {
-            File file = new File(mContext.getCacheDir(), "data.json");
-            InputStream inputStream = mContext.openFileInput(file.toString());
+            File file = new File(mContext.getExternalFilesDir(null), "data.json");
+            if(!file.exists())
+            {
+                file.createNewFile();
+                // write code for saving data to the file
+            }
+            FileInputStream inputStream = new FileInputStream(file.toString());
+            Log.d("File", "File being called is: " + file.toString());
 
             if ( inputStream != null ) {
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -121,9 +132,9 @@ public class GetJSON {
                 ret = stringBuilder.toString();
             }
         } catch (FileNotFoundException fne) {
-            fne.printStackTrace();
+            Log.d("File" , "File exception error: " + fne.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.d("File" , "Exception error: " + e.toString());
         }
         return ret;
     }

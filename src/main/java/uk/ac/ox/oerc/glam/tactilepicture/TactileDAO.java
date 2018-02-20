@@ -22,13 +22,14 @@ public class TactileDAO {
      * @param jsonArray
      * @return
      */
-    public String getAudio(PointF event, String tactileLayer, JSONArray jsonArray) {
+    public String getAudio(PointF event, String tactileLayer, JSONArray jsonArray, int width, int height) {
 
         try {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject c = jsonArray.getJSONObject(i);
-                float x = this.getFloat(c,"x");
-                float y = this.getFloat(c,"y");
+                float x = this.setPoint(getFloat(c,"x"), width);
+                float y = this.setPoint(this.getFloat(c,"y"), height);
+
                 if (calculateDistance(event,new PointF(x,y)) < fingerPos){
                     return (tactileLayer == "ONE") ? c.getString("ONE") : c.getString("TWO");
                 }
@@ -98,5 +99,15 @@ public class TactileDAO {
     private double calculateDistance (PointF p1, PointF p2) {
         return (double)Math.sqrt((double)Math.pow((p1.x - p2.x), 2.0)
                 + (double)Math.pow((p1.y - p2.y), 2.0));
+    }
+
+    /**
+     * Function to calculate the return point
+     * @param arrayPoint
+     * @param dimension
+     * @return
+     */
+    private float setPoint(float arrayPoint, int dimension) {
+        return (arrayPoint * dimension);
     }
 }
