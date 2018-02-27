@@ -2,7 +2,6 @@ package uk.ac.ox.oerc.glam.tactilepicture;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.android.volley.Cache;
 import com.android.volley.Network;
@@ -16,6 +15,7 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -24,8 +24,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import uk.ac.ox.oerc.glam.tactilepicture.AudioDownload;
 
 /**
  * Handler for GETting JSON files
@@ -36,6 +37,8 @@ public class GetJSON {
     RequestQueue mRequestQueue;
 
     private Context mContext;
+
+    private String newUrl;
 
     public GetJSON () {
         mContext = TactileApplication.getAppContext();
@@ -54,6 +57,10 @@ public class GetJSON {
         // Start the queue
         mRequestQueue.start();
 
+        Log.d("File", "URL being called is " + url);
+        String[] tmp = url.split("/");
+        newUrl =  " http://demeter.oerc.ox.ac.uk/glam/record/" + tmp[3] + "/audio/";
+
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
@@ -61,6 +68,19 @@ public class GetJSON {
                     public void onResponse(JSONObject response) {
                         //write data to file
                         writeFile(response.toString());
+                        //get the audio files
+                        AudioDownload audioDownload = new AudioDownload();
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("points");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                audioDownload.downloadAudio(newUrl,jsonObject.getString("ONE"),
+                                        jsonObject.getString("TWO"));
+                            }
+                        } catch (JSONException jse) {
+                            Log.d("JSON", "Write json " + jse.toString());
+                        }
+
                     }
                 }, new Response.ErrorListener() {
 
