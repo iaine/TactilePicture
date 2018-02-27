@@ -38,7 +38,6 @@ public class AudioDownload {
 
     protected String downloadAudio (String url, String fileNameOne, String fileNameTwo) {
         try {
-            Log.d("File", "File 1 : " + fileNameOne + " file 2 " + fileNameTwo);
 
             DownloadManager.Request request = new Request(Uri.parse((url + fileNameOne).trim()));
             request.setDestinationUri(Uri.fromFile(this.writeFileName(fileNameOne)));
@@ -55,7 +54,7 @@ public class AudioDownload {
                     String action = intent.getAction();
 
                     if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-                        Log.d("File", "File downloard");
+                        Log.d("File", "File download successful");
                     } else {
                         Log.d("File", "There was an error");
                     }
