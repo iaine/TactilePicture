@@ -2,6 +2,7 @@ package uk.ac.ox.oerc.glam.tactilepicture;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import com.android.volley.Cache;
 import com.android.volley.Network;
@@ -73,6 +74,59 @@ public class GetJSON {
         mRequestQueue.add(jsObjRequest);
 
     }
+
+    public void getJSONArr(String url, final ArrayAdapter arrayAdapter) {
+        // Instantiate the cache
+        Cache cache = new DiskBasedCache(mContext.getExternalFilesDir(null), 1024 * 1024); // 1MB cap
+
+        // Set up the network to use HttpURLConnection as the HTTP client.
+        Network network = new BasicNetwork(new HurlStack());
+
+        // Instantiate the RequestQueue with the cache and network.
+        mRequestQueue = new RequestQueue(cache, network);
+
+        // Start the queue
+        mRequestQueue.start();
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        JSONArray jArray = new JSONArray();
+                        try {
+                            jArray = response.getJSONArray("records");
+                            for (int i = 0; i < jArray.length(); i++) {
+                                JSONObject c = jArray.getJSONObject(i);
+                                arrayAdapter.add(formatString(c.toString()));
+                            }
+                        } catch (Exception e){
+                            Log.d("file", "JSON Error:" + e.toString());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+                        Log.d("File", "File retrieval error: " + error.toString());
+
+                    }
+                });
+        mRequestQueue.add(jsObjRequest);
+
+    }
+
+    private String formatString(String str) {
+        String formatStr = null;
+        String[] _tmp = str.split("_");
+        for (String tmp: _tmp) {
+            formatStr += tmp + " ";
+        }
+        return formatStr;
+    }
+
+    //Method to ge the JSON
 
     public JSONObject ParseJSON() {
         JSONObject json = null;

@@ -1,13 +1,16 @@
 package uk.ac.ox.oerc.glam.tactilepicture;
 
+
+import android.app.DialogFragment;
+
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.Toast;
 
-public class TactileActivity extends AppCompatActivity  {
+import android.view.WindowManager;
+
+
+public class TactileActivity extends AppCompatActivity {
 
     private GestureDetectorCompat mDetector;
 
@@ -16,13 +19,12 @@ public class TactileActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
 
         // use the Exception Handler to do the restart
-        Thread.setDefaultUncaughtExceptionHandler(new TactileExceptionHandler(this));
+        //Thread.setDefaultUncaughtExceptionHandler(new TactileExceptionHandler(this));
         // keep the screen on whilst app running
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        if (getIntent().getBooleanExtra("crash", false)) {
-            Toast.makeText(this, "App restarted after crash", Toast.LENGTH_SHORT).show();
-        }
-        //throw new NullPointerException();
+
+        showDialog();
+
         setContentView(new TactileView(this, null));
     }
 
@@ -30,4 +32,11 @@ public class TactileActivity extends AppCompatActivity  {
     public void onBackPressed() {
 
     }
+
+    void showDialog() {
+        DialogFragment newFragment = MyAlertDialogFragment.newInstance();
+        newFragment.show(getFragmentManager(), "dialog");
+    }
+
+
 }

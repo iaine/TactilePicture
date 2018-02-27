@@ -59,7 +59,7 @@ public class TactileView extends View  {
         button = false;
 
         //check for connection
-        setUpData(context);
+        //setUpData(context);
         initView();
     }
 
@@ -70,14 +70,12 @@ public class TactileView extends View  {
      * @param context - the system context
      */
     private void setUpData(Context context) {
-        //WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        Log.d("File", "WiFi enabled: " + wifi.toString());
         if (wifi.isConnected()){
-          GetJSON getJSON = new GetJSON();
-          Log.d("File", "Getting data");
-          getJSON.getJSON("http://demeter.oerc.ox.ac.uk/glam/record/turner_image/json");
+            GetJSON getJSON = new GetJSON();
+            Log.d("File", "Getting data");
+            getJSON.getJSON("http://demeter.oerc.ox.ac.uk/glam/record/turner_image/json");
         }
     }
 
