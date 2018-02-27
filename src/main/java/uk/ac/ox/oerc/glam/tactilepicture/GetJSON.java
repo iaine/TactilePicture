@@ -150,7 +150,7 @@ public class GetJSON {
             if (!file.exists()) {
                 file.createNewFile();
             }
-            Log.d("File", "Writing to " + filename.toString());
+
             outputStream = new FileOutputStream(file, true);
             outputStream.write(params.getBytes());
             outputStream.flush();
