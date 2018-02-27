@@ -57,26 +57,7 @@ public class TactileView extends View  {
         mDetector = new GestureDetectorCompat(context, dgl);
         mDetector.setOnDoubleTapListener(dgl);
         button = false;
-
-        //check for connection
-        //setUpData(context);
         initView();
-    }
-
-    /**
-     * Method to load data
-     * If the wifi is on, then load the url and write the
-     * data form the disk
-     * @param context - the system context
-     */
-    private void setUpData(Context context) {
-        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifi.isConnected()){
-            GetJSON getJSON = new GetJSON();
-            Log.d("File", "Getting data");
-            getJSON.getJSON("http://demeter.oerc.ox.ac.uk/glam/record/turner_image/json");
-        }
     }
 
     /**
