@@ -48,7 +48,7 @@ public class GetJSON {
         // Instantiate the cache
         Cache cache = new DiskBasedCache(mContext.getCacheDir(), 1024 * 1024); // 1MB cap
 
-        // Set up the network to use HttpURLConnection as the HTTP client.
+        // Set up the inetwork to use HttpURLConnection as the HTTP client.
         Network network = new BasicNetwork(new HurlStack());
 
         // Instantiate the RequestQueue with the cache and network.
@@ -59,7 +59,7 @@ public class GetJSON {
 
         Log.d("File", "URL being called is " + url);
         String[] tmp = url.split("/");
-        newUrl =  " http://demeter.oerc.ox.ac.uk/glam/record/" + tmp[3] + "/audio/";
+        newUrl =  " http://demeter.oerc.ox.ac.uk/glam/static/tiles/" + tmp[5] + "/audio/";
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
