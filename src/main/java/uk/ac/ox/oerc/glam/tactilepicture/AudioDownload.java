@@ -44,9 +44,9 @@ public class AudioDownload {
             dm.enqueue(request);
 
 
-            request = new Request(Uri.parse((url + fileNameTwo).trim()));
-            request.setDestinationUri(Uri.fromFile(this.writeFileName(fileNameTwo)));
-            enqueue = dm.enqueue(request);
+            DownloadManager.Request requestTwo = new Request(Uri.parse((url + fileNameTwo).trim()));
+            requestTwo.setDestinationUri(Uri.fromFile(this.writeFileName(fileNameTwo)));
+            enqueue = dm.enqueue(requestTwo);
 
             BroadcastReceiver receiver = new BroadcastReceiver() {
                 @Override
