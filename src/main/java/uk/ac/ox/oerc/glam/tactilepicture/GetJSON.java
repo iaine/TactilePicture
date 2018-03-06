@@ -114,11 +114,21 @@ public class GetJSON {
         FileOutputStream outputStream;
         String filename = "data.json";
         try {
+            File musfile = new File(mContext.getExternalFilesDir(null), filename);
+
+
             File file = new File(mContext.getExternalFilesDir(null), filename);
             // test if file exists.
+
+            if(file.exists()) {
+                file.delete();
+            }
+
             if (!file.exists()) {
                 file.createNewFile();
             }
+
+            //clean the mus_audio as well
 
             outputStream = new FileOutputStream(file, true);
             outputStream.write(params.getBytes());
